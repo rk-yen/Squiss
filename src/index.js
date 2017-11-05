@@ -108,6 +108,9 @@ class Squiss extends EventEmitter {
    * @param {Object} [opts.queuePolicy] If specified, will be set as the access policy of the queue when
    *    {@link #createQueue} is called. See http://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html for
    *    more information.
+   * @param {Object} [opts.receiveAttributes] An array of strings with attribute names (e.g. `ApproximateReceiveCount`) to request along with the `receiveMessage` call.
+   *    The attributes will be accessible via `message.raw.Attributes.<attribute>`.
+   *    For more info see [AWS SQS ReceiveMessage](http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_ReceiveMessage.html)
    */
   constructor(opts) {
     super()
@@ -470,6 +473,9 @@ class Squiss extends EventEmitter {
     }
     if (this._opts.visibilityTimeoutSecs !== undefined) {
       params.VisibilityTimeout = this._opts.visibilityTimeoutSecs
+    }
+    if (this._opts.receiveAttributes !== undefined) {
+      params.AttributeNames = this._opts.receiveAttributes
     }
     this._activeReq = this.sqs.receiveMessage(params)
     this._activeReq.promise().then((data) => {
