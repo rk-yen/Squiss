@@ -264,6 +264,20 @@ describe('index', () => {
         abortSpy.should.not.be.called()
       })
     })
+    it('observes receiveAttributes', () => {
+      inst = new Squiss({ queueUrl: 'foo', receiveAttributes: ['All'] })
+      inst.sqs = new SQSStub()
+      const spy = sinon.spy(inst.sqs, 'receiveMessage')
+      inst.start()
+      return wait().then(() => {
+        spy.should.be.calledWith({
+          QueueUrl: 'foo',
+          MaxNumberOfMessages: 10,
+          WaitTimeSeconds: 20,
+          AttributeNames: ['All']
+        })
+      })
+    })
   })
   describe('Deleting', () => {
     it('deletes messages using internal API', () => {
